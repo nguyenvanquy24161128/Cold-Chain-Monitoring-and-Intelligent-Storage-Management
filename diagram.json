@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "author": "Thanh Vien A - Hardware Lead",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht_door", "top": -120, "left": -160, "attrs": { "temperature": "5.0", "humidity": "85.0" } },
+    { "type": "wokwi-ds18b20", "id": "temp_bottom", "top": 80, "left": -160, "attrs": { "temperature": "3.5" } },
+    { "type": "wokwi-relay-module", "id": "relay1", "top": -100, "left": 180, "attrs": {} },
+    { "type": "wokwi-slide-switch", "id": "door_switch", "top": 100, "left": 180, "attrs": {} },
+    { "type": "wokwi-resistor", "id": "r2", "top": 120, "left": -60, "attrs": { "value": "4700" } },
+    { "type": "wokwi-stepper-motor", "id": "stepper_door", "top": 200, "left": 180, "attrs": {} },
+    { "type": "wokwi-led", "id": "fan_mock", "top": -110, "left": 350, "attrs": { "color": "blue", "label": "QUẠT LÀM MÁT" } },
+    { "type": "wokwi-w25q64", "id": "flash1", "top": 200, "left": -160, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:3V3", "dht_door:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "dht_door:GND", "black", [ "v0" ] ],
+    [ "esp:D27", "dht_door:SDA", "green", [ "v0" ] ],
+
+    [ "esp:3V3", "temp_bottom:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "temp_bottom:GND", "black", [ "v0" ] ],
+    [ "esp:D14", "temp_bottom:DQ", "green", [ "v0" ] ],
+    [ "esp:3V3", "r2:1", "red", [ "v0" ] ],
+    [ "esp:D14", "r2:2", "green", [ "v0" ] ],
+
+    [ "esp:VIN", "relay1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.2", "relay1:GND", "black", [ "v0" ] ],
+    [ "esp:D26", "relay1:IN", "blue", [ "v0" ] ],
+
+    [ "esp:GND.2", "door_switch:1", "black", [ "v0" ] ],
+    [ "esp:D4", "door_switch:2", "orange", [ "v0" ] ],
+
+    [ "esp:D19", "stepper_door:A+", "purple", [ "v0" ] ],
+    [ "esp:D18", "stepper_door:A-", "magenta", [ "v0" ] ],
+    [ "esp:D5", "stepper_door:B+", "yellow", [ "v0" ] ],
+    [ "esp:D21", "stepper_door:B-", "white", [ "v0" ] ],
+
+    [ "esp:VIN", "relay1:COM", "red", [ "v0" ] ],
+    [ "relay1:NO", "fan_mock:A", "red", [ "v0" ] ],
+    [ "esp:GND.2", "fan_mock:C", "black", [ "v0" ] ],
+
+    [ "esp:3V3", "flash1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "flash1:GND", "black", [ "v0" ] ],
+    [ "esp:D5", "flash1:CS", "orange", [ "v0" ] ],
+    [ "esp:D18", "flash1:CLK", "green", [ "v0" ] ],
+    [ "esp:D19", "flash1:DO", "yellow", [ "v0" ] ],
+    [ "esp:D23", "flash1:DI", "blue", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

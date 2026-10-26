@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cold-Chain Monitoring - Nhóm 07</title>
+  <!-- 1. Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 2. Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- 3. MQTT.js CDN -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans p-4 md:p-6">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    <!-- Header -->
+    <header class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900">Hệ Thống Giám Sát Kho Lạnh (Cold-Chain)</h1>
+        <p class="text-xs text-slate-500">Mã thiết bị: <span id="device-id" class="font-mono font-bold text-blue-600">ESP32_COLD_01</span></p>
+      </div>
+      <div id="connection-badge" class="px-3 py-1 text-xs font-semibold rounded-full bg-slate-200 text-slate-600">
+        Đang khởi tạo kết nối...
+      </div>
+    </header>
+
+    <!-- 4 Thẻ chỉ số trạng thái (Status Cards) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card Nhiệt độ -->
+      <div id="temp-card" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 transition-all duration-300">
+        <p class="text-xs text-slate-500 font-medium">Nhiệt độ Kho lạnh</p>
+        <div class="flex items-baseline justify-between mt-2">
+          <span id="temp-val" class="text-3xl font-extrabold text-slate-900">--</span>
+          <span class="text-slate-500 text-sm font-semibold">°C</span>
+        </div>
+        <p id="temp-status" class="text-xs text-slate-400 mt-1 font-medium">Ngưỡng an toàn: 2.0°C - 8.0°C</p>
+      </div>
+
+      <!-- Card Độ ẩm -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <p class="text-xs text-slate-500 font-medium">Độ ẩm tương đối</p>
+        <div class="flex items-baseline justify-between mt-2">
+          <span id="hum-val" class="text-3xl font-extrabold text-slate-900">--</span>
+          <span class="text-slate-500 text-sm font-semibold">%</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Độ ẩm không khí</p>
+      </div>
+
+      <!-- Card Trạng thái Cửa -->
+      <div id="door-card" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 transition-all duration-300">
+        <p class="text-xs text-slate-500 font-medium">Cảm biến Cửa Kho</p>
+        <div class="mt-2 flex items-center justify-between">
+          <span id="door-status" class="px-3 py-1 text-sm font-bold rounded-md bg-slate-100 text-slate-600">
+            CHƯA RÕ
+          </span>
+          <span id="door-icon" class="text-xl">🚪</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Cảnh báo khi door_open = true</p>
+      </div>
+
+      <!-- Card Quạt Làm mát -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <p class="text-xs text-slate-500 font-medium">Hệ thống Làm mát / Quạt</p>
+        <div class="mt-2 flex items-center justify-between">
+          <span id="cooling-status" class="px-3 py-1 text-sm font-bold rounded-md bg-slate-100 text-slate-600">
+            OFF
+          </span>
+          <span id="cooling-icon" class="text-xl">❄️</span>
+        </div>
+        <p id="last-update" class="text-xs text-slate-400 mt-1">Cập nhật: --:--:--</p>
+      </div>
+
+    </div>
+
+    <!-- Biểu đồ Real-time (Nơi chứa tiêu đề, 2 nút bấm và thẻ canvas vẽ đồ thị) -->
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+        <div>
+          <h2 class="text-md font-bold text-slate-800">Biểu đồ Nhiệt độ & Độ ẩm thời gian thực</h2>
+          <p class="text-xs text-slate-400">Tần suất nhận dữ liệu: 3 giây / lần</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="fetchHistoryData()" class="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg border border-blue-200 transition">
+            🔄 Nạp Lịch sử (API)
+          </button>
+          <button onclick="exportCSV()" class="px-3 py-1.5 text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg shadow-sm transition">
+            📥 Xuất Báo Cáo (.CSV)
+          </button>
+        </div>
+      </div>
+      <div class="relative w-full h-80">
+        <canvas id="telemetryChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nối file JavaScript chính -->
+  <script src="app.js"></script>
+</body>
+</html>
